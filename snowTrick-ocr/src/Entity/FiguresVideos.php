@@ -19,9 +19,8 @@ class FiguresVideos
 
     /**
      * @ORM\ManyToOne(targetEntity=Figures::class, inversedBy="figuresVideos")
-     * @ORM\JoinColumn(nullable=false)
      */
-    private $figure_id;
+    private $figure;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -33,14 +32,14 @@ class FiguresVideos
         return $this->id;
     }
 
-    public function getFigureId(): ?Figures
+    public function getFigure(): ?Figures
     {
-        return $this->figure_id;
+        return $this->figure;
     }
 
-    public function setFigureId(?Figures $figure_id): self
+    public function setFigure(?Figures $figure): self
     {
-        $this->figure_id = $figure_id;
+        $this->figure = $figure;
 
         return $this;
     }

@@ -21,13 +21,13 @@ class Discussions
      * @ORM\ManyToOne(targetEntity=Figures::class, inversedBy="discussions")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $figure_id;
+    private $figure;
 
     /**
      * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="discussions")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $user;
 
     /**
      * @ORM\Column(type="text")
@@ -49,26 +49,26 @@ class Discussions
         return $this->id;
     }
 
-    public function getFigureId(): ?Figures
+    public function getFigure(): ?Figures
     {
-        return $this->figure_id;
+        return $this->figure;
     }
 
-    public function setFigureId(?Figures $figure_id): self
+    public function setFigure(?Figures $figure): self
     {
-        $this->figure_id = $figure_id;
+        $this->figure = $figure;
 
         return $this;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?Users $user_id): self
+    public function setUser(?Users $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }

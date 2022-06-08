@@ -25,7 +25,7 @@ class FiguresGroups
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Figures::class, mappedBy="figure_group_id")
+     * @ORM\OneToMany(targetEntity=Figures::class, mappedBy="figure_group")
      */
     private $figures;
 
@@ -63,7 +63,7 @@ class FiguresGroups
     {
         if (!$this->figures->contains($figure)) {
             $this->figures[] = $figure;
-            $figure->setFigureGroupId($this);
+            $figure->setFigureGroup($this);
         }
 
         return $this;
@@ -73,8 +73,8 @@ class FiguresGroups
     {
         if ($this->figures->removeElement($figure)) {
             // set the owning side to null (unless already changed)
-            if ($figure->getFigureGroupId() === $this) {
-                $figure->setFigureGroupId(null);
+            if ($figure->getFigureGroup() === $this) {
+                $figure->setFigureGroup(null);
             }
         }
 

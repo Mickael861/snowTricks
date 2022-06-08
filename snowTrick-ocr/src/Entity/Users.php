@@ -63,18 +63,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private $created_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=Figures::class, mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity=Figures::class, mappedBy="user", orphanRemoval=true)
      */
-    private $figures_groups;
+    private $figures;
 
     /**
-     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="user_id")
+     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="user", orphanRemoval=true)
      */
     private $discussions;
 
     public function __construct()
     {
-        $this->figures_groups = new ArrayCollection();
+        $this->figures = new ArrayCollection();
         $this->discussions = new ArrayCollection();
     }
 
@@ -225,27 +225,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Figures>
      */
-    public function getFiguresGroups(): Collection
+    public function getFigures(): Collection
     {
-        return $this->figures_groups;
+        return $this->figures;
     }
 
-    public function addFiguresGroup(Figures $figuresGroup): self
+    public function addFigure(Figures $figure): self
     {
-        if (!$this->figures_groups->contains($figuresGroup)) {
-            $this->figures_groups[] = $figuresGroup;
-            $figuresGroup->setUserId($this);
+        if (!$this->figures->contains($figure)) {
+            $this->figures[] = $figure;
+            $figure->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeFiguresGroup(Figures $figuresGroup): self
+    public function removeFigure(Figures $figure): self
     {
-        if ($this->figures_groups->removeElement($figuresGroup)) {
+        if ($this->figures->removeElement($figure)) {
             // set the owning side to null (unless already changed)
-            if ($figuresGroup->getUserId() === $this) {
-                $figuresGroup->setUserId(null);
+            if ($figure->getUser() === $this) {
+                $figure->setUser(null);
             }
         }
 
@@ -264,7 +264,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->discussions->contains($discussion)) {
             $this->discussions[] = $discussion;
-            $discussion->setUserId($this);
+            $discussion->setUser($this);
         }
 
         return $this;
@@ -274,8 +274,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->discussions->removeElement($discussion)) {
             // set the owning side to null (unless already changed)
-            if ($discussion->getUserId() === $this) {
-                $discussion->setUserId(null);
+            if ($discussion->getUser() === $this) {
+                $discussion->setUser(null);
             }
         }
 

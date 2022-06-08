@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220608075133 extends AbstractMigration
+final class Version20220608085955 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,8 +20,8 @@ final class Version20220608075133 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE figures_images (id INT AUTO_INCREMENT NOT NULL, figure_id_id INT NOT NULL, file_path VARCHAR(255) NOT NULL, INDEX IDX_BDAA97726D69186E (figure_id_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE figures_images ADD CONSTRAINT FK_BDAA97726D69186E FOREIGN KEY (figure_id_id) REFERENCES figures (id)');
+        $this->addSql('CREATE TABLE figures_images (id INT AUTO_INCREMENT NOT NULL, figure_id INT DEFAULT NULL, file_path VARCHAR(255) NOT NULL, INDEX IDX_BDAA97725C011B5 (figure_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE figures_images ADD CONSTRAINT FK_BDAA97725C011B5 FOREIGN KEY (figure_id) REFERENCES figures (id)');
     }
 
     public function down(Schema $schema): void

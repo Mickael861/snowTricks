@@ -20,16 +20,16 @@ class Figures
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="figures_groups")
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="figures")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $user_id;
+    private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=FiguresGroups::class, inversedBy="figures")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $figure_group_id;
+    private $figure_group;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -57,17 +57,17 @@ class Figures
     private $updated_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure")
      */
     private $figuresImages;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure_id", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure")
      */
     private $figuresVideos;
 
     /**
-     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="figure_id")
+     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="figure", orphanRemoval=true)
      */
     private $discussions;
 
@@ -83,26 +83,26 @@ class Figures
         return $this->id;
     }
 
-    public function getUserId(): ?Users
+    public function getUser(): ?Users
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?Users $user_id): self
+    public function setUser(?Users $user): self
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getFigureGroupId(): ?FiguresGroups
+    public function getFigureGroup(): ?FiguresGroups
     {
-        return $this->figure_group_id;
+        return $this->figure_group;
     }
 
-    public function setFigureGroupId(?FiguresGroups $figure_group_id): self
+    public function setFigureGroup(?FiguresGroups $figure_group): self
     {
-        $this->figure_group_id = $figure_group_id;
+        $this->figure_group = $figure_group;
 
         return $this;
     }
@@ -179,7 +179,7 @@ class Figures
     {
         if (!$this->figuresImages->contains($figuresImage)) {
             $this->figuresImages[] = $figuresImage;
-            $figuresImage->setFigureId($this);
+            $figuresImage->setFigure($this);
         }
 
         return $this;
@@ -189,8 +189,8 @@ class Figures
     {
         if ($this->figuresImages->removeElement($figuresImage)) {
             // set the owning side to null (unless already changed)
-            if ($figuresImage->getFigureId() === $this) {
-                $figuresImage->setFigureId(null);
+            if ($figuresImage->getFigure() === $this) {
+                $figuresImage->setFigure(null);
             }
         }
 
@@ -209,7 +209,7 @@ class Figures
     {
         if (!$this->figuresVideos->contains($figuresVideo)) {
             $this->figuresVideos[] = $figuresVideo;
-            $figuresVideo->setFigureId($this);
+            $figuresVideo->setFigure($this);
         }
 
         return $this;
@@ -219,8 +219,8 @@ class Figures
     {
         if ($this->figuresVideos->removeElement($figuresVideo)) {
             // set the owning side to null (unless already changed)
-            if ($figuresVideo->getFigureId() === $this) {
-                $figuresVideo->setFigureId(null);
+            if ($figuresVideo->getFigure() === $this) {
+                $figuresVideo->setFigure(null);
             }
         }
 
@@ -239,7 +239,7 @@ class Figures
     {
         if (!$this->discussions->contains($discussion)) {
             $this->discussions[] = $discussion;
-            $discussion->setFigureId($this);
+            $discussion->setFigure($this);
         }
 
         return $this;
@@ -249,8 +249,8 @@ class Figures
     {
         if ($this->discussions->removeElement($discussion)) {
             // set the owning side to null (unless already changed)
-            if ($discussion->getFigureId() === $this) {
-                $discussion->setFigureId(null);
+            if ($discussion->getFigure() === $this) {
+                $discussion->setFigure(null);
             }
         }
 
