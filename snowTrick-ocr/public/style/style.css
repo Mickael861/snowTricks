@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+
+.home-img {
+    background-image: url(/images/random/img-home.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.familly-slogan,
+.font-figure-name {
+    font-family: 'Amatic SC', cursive;
+}
+
+.hover-figure-img:hover {
+    transform: scale(1.02);
+    filter: hue-rotate(90deg);
+    transition: .2s;
+}
