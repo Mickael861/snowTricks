@@ -25,9 +25,9 @@
     <div class="d-flex flex-wrap justify-content-evenly align-items-start mt-5 mb-5" id="figures">
         {% for figure in figures %}
             <div class="card shadow mb-5 p-2 bg-body rounded d-none figure" style="width: 20rem;">
-                <a href="#">
-                    <img src="\images\figures\snowtricks-2.jpg" class="card-img-top hover-figure-img" alt="...">
-                </a>
+                <div style="cursor:pointer;">
+                    <img src="{{ figure.PathImage }}" class="card-img-top hover-figure-img" alt="Figure de snowboard">
+                </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
