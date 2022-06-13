@@ -73,7 +73,12 @@ class Figures
      * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="figure", orphanRemoval=true)
      */
     private $discussions;
-
+    
+    /**
+     * Path to image
+     *
+     * @var string
+     */
     private $path_image;
 
     public function __construct()

@@ -2,6 +2,7 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     globals:
         path_image_figure: '\images\figures'
+    form_themes: ['bootstrap_5_layout.html.twig']
 
 when@test:
     twig:

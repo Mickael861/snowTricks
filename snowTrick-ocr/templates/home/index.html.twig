@@ -11,7 +11,7 @@
                         <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"/>
                     </svg>
                 </a>
-                <div class="familly-slogan vh-100 text-start w-100 d-flex justify-content-center flex-column text-uppercase text-black fw-bolder fs-1">
+                <div class="familly-text vh-100 text-start w-100 d-flex justify-content-center flex-column text-uppercase text-black fw-bolder fs-1">
                     <span> snowboarding </span>
                     <span> makes me happy </span>
                 </div>
@@ -25,13 +25,13 @@
     <div class="d-flex flex-wrap justify-content-evenly align-items-start mt-5 mb-5" id="figures">
         {% for figure in figures %}
             <div class="card shadow mb-5 p-2 bg-body rounded d-none figure" style="width: 20rem;">
-                <div style="cursor:pointer;">
+                <a href="{{ path('app_figure_home', {'id':figure.id, 'slug':figure.slug}) }}" style="cursor:pointer;">
                     <img src="{{ figure.PathImage }}" class="card-img-top hover-figure-img" alt="Figure de snowboard">
-                </div>
+                </a>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="card-text font-figure-name fs-4 fw-bold" style="max-width:217px">{{ figure.name }}</p>
+                            <p class="card-text familly-text fs-4 fw-bold" style="max-width:217px">{{ figure.name }}</p>
                         </div>
                         <div class="position-absolute bottom-0 end-0 p-3">
                             <a href="#" class="text-decoration-none">

@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Figures;
+use App\Form\DiscussionsType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -29,11 +28,16 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/figure", name="app_figure_home")
+     * @Route("/figure/{id}/{slug}", name="app_figure_home")
      * 
      */ 
-    public function figure(Request $request, ManagerRegistry $manager): Response
+    public function figure(Figures $figure): Response
     {
+        $formDiscussions = $this->createForm(DiscussionsType::class);
 
+        return $this->render('figure/index.html.twig', [
+            'figure' => $figure,
+            'formDiscussions' => $formDiscussions->createView()
+        ]);
     }
 }
