@@ -12,30 +12,31 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     /**
-     * @Route("/home", name="app_figures_home")
-     * @Route("/", name="app_figures_home")
-     * 
-     */    
-    public function figuresHome(ManagerRegistry $manager): Response
+     * @Route("/home", name="app_figures")
+     * @Route("/", name="app_figures")
+     */
+    public function figures(ManagerRegistry $manager): Response
     {
+        $success = null;
+
         //Récuperation des figures
         $repository = $manager->getRepository(Figures::class);
         $figures = $repository->findBy(array(), array('id' => 'ASC'));
 
-        return $this->render('home/index.html.twig', [
-            'figures' => $figures
+        return $this->render('home/figures.html.twig', [
+            'figures' => $figures,
+            'success' => $success
         ]);
     }
 
     /**
-     * @Route("/figure/{id}/{slug}", name="app_figure_home")
-     * 
-     */ 
+     * @Route("/figure/{id}/{slug}", name="app_figure")
+     */
     public function figure(Figures $figure): Response
     {
         $formDiscussions = $this->createForm(DiscussionsType::class);
 
-        return $this->render('figure/index.html.twig', [
+        return $this->render('home/figure.html.twig', [
             'figure' => $figure,
             'formDiscussions' => $formDiscussions->createView()
         ]);

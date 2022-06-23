@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+
+<div class="vh-100">
+    <div class="position-absolute top-50 start-50 translate-middle">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <div>
+                {{ form_start(formLogin, {'attr': {'novalidate': 'novalidate', 'style' : 'width:450px'}}) }}
+                    {{ form_row(formLogin.user_name) }}
+                    {{ form_row(formLogin.email) }}
+                    {{ form_row(formLogin.password) }}
+                    {{ form_row(formLogin.file_path) }}
+                    {{ form_row(formLogin.registration, {'attr': {'class': 'btn btn-success d-block m-auto px-4 py-2'}}) }}
+                {{ form_end(formLogin) }}
+            </div>
+            <a href="{{ path('app_forgot_password') }}"> Mot de passe oublié </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

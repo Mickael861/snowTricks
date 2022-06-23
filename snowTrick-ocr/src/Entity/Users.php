@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\UsersRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
+ * @UniqueEntity("email", message = "L'email {{ value }} est deja utilisé")
+ * @UniqueEntity("user_name", message = "Le pseudo {{ value }} est deja utilisé")
  */
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -22,28 +26,57 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180)
+     *
+     * @Assert\Email(
+     *     message = "L'email {{ value }} n'est pas valide"
+     * )
+     *
+     * @Assert\NotNull(
+     *     message = "L'email est obligatoire"
+     * )
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private $roles = [
+        "ROLE" => "ROLE_USER"
+    ];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     *
+     * @Assert\NotNull(
+     *     message = "Le mot de passe est obligatoire"
+     * )
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotNull(
+     *     message = "Le pseudo est obligatoire"
+     * )
+     *
+     * @Assert\Length(
+     *      min = 10,
+     *      max = 20,
+     *      minMessage = "Le pseudo doit contenir minimum {{ limit }} caractéres",
+     *      maxMessage = "Le pseudo doit contenir maximum {{ limit }} caractéres"
+     * )
      */
     private $user_name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotNull(
+     *     message = "La photo de profil est obligatoire"
+     * )
      */
     private $file_path;
 
@@ -102,7 +135,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) $this->user_name;
     }
 
     /**

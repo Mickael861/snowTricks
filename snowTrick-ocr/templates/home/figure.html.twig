@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Figure{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">  
+        <div class="d-flex justify-content-center mt-5">   
+            <div class="col-md-10 col-md-offset-1 mt-5 mb-4 shadow rounded">  
+                <div class="card position-relative">
+                    <img class="card-img-top" src="{{ figure.PathImage }}" alt="figure snowboard">
+                    <h1 class="familly-text position-absolute top-50 start-50 translate-middle bg-black text-white text-center rounded fs-2 fw-bolder p-3">
+                        {{ figure.name|capitalize }}
+                    </h1>
+                </div>
+
+                <div class='d-flex justify-content-evenly align-items-start p-3 flex-wrap'>
+                    {% for image in figure.FiguresImages %}
+                        <img src="{{ path_image_figure }}\{{ image.FilePath }}" width="25%" class="mx-1 my-3 rounded shadow">
+                    {% endfor %}
+                    {% for image in figure.FiguresVideos %}
+                        <iframe class="mx-1 my-3 rounded shadow" width="25%" src="https://www.youtube.com/embed/{{ image.SiteUrl }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    {% endfor %}
+                </div>
+
+                <hr class='my-5 border border-dark mx-5'>
+
+                <div class="lh-lg">
+                    <h3 class="mb-5 text-center familly-text fs-2 fw-bolder">{{ figure.name|capitalize }}</h3>
+                    <p class="px-4 familly-desc fs-6">{{ figure.description|nl2br }}</p>
+                </div>
+
+                <hr class='my-5 border border-dark mx-5'>
+
+                <div class='d-flex justify-content-evenly align-items-center mt-5 flex-wrap'>
+                    <div class="familly-desc fw-bolder border border-secondary px-3 py-2 rounded bg-black text-white mb-2">
+                        Par : {{ figure.User.userName }}
+                    </div>
+                    <div class="familly-desc fw-bolder border border-secondary px-3 py-2 rounded bg-black text-white mb-2">
+                        Ajouté le : {{ figure.CreatedAt|date("m/d/Y") }}
+                        {% if figure.UpdatedAt %}
+                        (Mise à jour le : {{ figure.UpdatedAt|date("m/d/Y") }})
+                        {% endif %}
+                    </div>
+                    <div class="familly-desc fw-bolder border border-secondary px-3 py-2 rounded bg-black text-white">
+                        Catégorie : {{ figure.FigureGroup.name }}
+                    </div>
+                </div>
+
+                <hr class='my-5 border border-dark mx-5'>
+
+                <div class="px-5">
+                    {{ form_start(formDiscussions, {'attr': {'novalidate': 'novalidate'}}) }}
+                        {{ form_row(formDiscussions.content) }}
+                        {{ form_row(formDiscussions.send, {'attr': {'class': 'btn btn-success d-block m-auto px-4 py-2'}}) }}
+                    {{ form_end(formDiscussions) }}
+                </div>
+
+                <hr class='my-5 border border-dark mx-5'>
+
+                <div class="py-2 rounded text-black fs-4 text-center">
+                    {{ figure.Discussions|length }} Commentaire{% if figure.Discussions|length > 1 %}s{% endif %}
+                </div>
+
+                <div id="discussionsContent">
+                    {% for discussion in figure.Discussions|reverse %}
+                    <div class='d-flex p-4 rounded my-4 align-items-center d-none'>
+                        <div class="me-3 d-flex flex-column text-center">
+                            <img src="{{ path_image_profil }}\{{ discussion.User.FilePath }}" width="50" class="rounded-circle">
+                        </div>
+                        <div class='border border-black w-100 rounded p-4 position-relative'>
+                            <div class="familly-desc fw-bolder bg-white border-2 text-black border border-secondary d-inline px-3 py-2 position-absolute top-0 start-50 translate-middle">
+                                {{ discussion.User.UserName|capitalize }}
+                            </div>
+                            <div class="familly-desc">
+                                {{ discussion.content|nl2br }}
+                            </div>
+                            <div class='familly-desc position-absolute bottom-0 end-0 pe-1 fs-6 fw-lighter text-muted'>
+                                Publié le : {{ discussion.createdAt|date('m/d/Y à h:m') }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+
+                {% if figure.Discussions|length > 10 %}
+                    <div class="w-100 text-center mb-5">
+                        <a class="text-black text-decoration-none" id="loadMoreDiscussions" style="cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#7DCEA0" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                            </svg>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>     
+        </div>           
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('javascript/figureIndex.js') }}"></script>
+{% endblock %}

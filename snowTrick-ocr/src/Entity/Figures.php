@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Figures
 {
     const PATH_IMAGE = '\images\figures\\';
-    const DEFAULT_IMAGE = 'default-tricks.jpg';
 
     /**
      * @ORM\Id
@@ -274,18 +273,11 @@ class Figures
      */
     public function getPathImage(): ?string
     {
-        //Figure recovery
         $figuresImages = $this->getFiguresImages();
-
-        //Path to default image
-        $figure_image = self::PATH_IMAGE . self::DEFAULT_IMAGE;
-
-        //If an image exists replace the default image
         foreach ($figuresImages as $path_image) {
             $figure_image = self::PATH_IMAGE . $path_image->getFilePath();
         }
 
-        //Adding the image to the figure
         $this->setPathImage($figure_image);
 
         return $this->path_image;

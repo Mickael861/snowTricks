@@ -19,7 +19,7 @@
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ path('app_figures_home') }}">
+                <a class="navbar-brand" href="{{ path('app_figures') }}">
                     <img width="40px" src="/images/favicon.ico" alt="Logo">
                 </a>
                 <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,13 +28,31 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark fw-bolder text-center" aria-current="page" href="{{ path('app_figures_home') }}">
+                            <a class="nav-link text-dark fw-bolder text-center" aria-current="page" href="{{ path('app_figures') }}">
                                 Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark fw-bolder text-center" aria-current="page" href="{{ path('security_registration') }}">
+                                Sign up
                             </a>
                         </li>
                     </ul>
                 </div>
             </div>
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success position-absolute top-0 start-50 translate-middle-x mt-1">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('errors') %}
+                <div class="alert alert-danger position-absolute top-0 start-50 translate-middle-x mt-1">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
         </nav>
         {% block body %}{% endblock %}
         <footer style="height:150px" class="position-relative bottom-0 bg-black d-flex justify-content-center align-items-end">
