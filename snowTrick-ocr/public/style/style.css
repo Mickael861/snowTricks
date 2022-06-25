@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@1,300&display=swap');
+
+.home-img {
+    background-image: url(/images/random/img-home.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.home-img {
+    background-image: url(/images/random/img-home.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+.familly-text {
+    font-family: 'Amatic SC', cursive;
+}
+
+.familly-desc {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.hover-figure-img:hover {
+    transform: scale(1.02);
+    filter: hue-rotate(90deg);
+    transition: .2s;
+}
