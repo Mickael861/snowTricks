@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DiscussionsRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +32,17 @@ class Discussions
 
     /**
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotNull(
+     *     message = "Le contenu est obligatoire"
+     * )
+     *
+     * @Assert\Length(
+     *      min = 50,
+     *      max = 255,
+     *      minMessage = "Le contenu doit contenir minimum {{ limit }} caractéres",
+     *      maxMessage = "Le contenu doit contenir maximum {{ limit }} caractéres"
+     * )
      */
     private $content;
 

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<h1 class='text-center my-5 py-5'>Me connecter</h1>
+<div class="vh-100">
+    <div class="position-absolute top-50 start-50 translate-middle">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <div>
+                {% if error %}
+                <div class="alert alert-danger text-center" role="alert">
+                    {{ error }}
+                  </div>   
+                {% endif %}
+                <form action="{{ path('app_login') }}" method="post" style="width:450px">
+                    <div class="mb-3">
+                        <label for="user_name" class="form-label">Nom d'utilisateur</label>
+                        <input type="text" class="form-control" name="_username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mot de passe</label>
+                        <input type="password" class="form-control" name="_password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary d-block m-auto px-4 py-2">Connexion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

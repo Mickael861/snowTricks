@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Mailer\Mail;
 use App\Entity\Users;
 use DateTimeImmutable;
-use App\Mailer\Mail;
 use App\Form\RegistrationType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +12,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -67,8 +68,7 @@ class SecurityController extends AbstractController
      */
     public function valdationTokenMail(string $token): response
     {
-        $users = Users::class;
-        $repository = $this->manager->getRepository($users);
+        $repository = $this->manager->getRepository(Users::class);
         $addFlash = [];
         $redirect = null;
 
@@ -232,14 +232,32 @@ class SecurityController extends AbstractController
      *
      * User Login
      */
-    public function login(): response
+    public function login(AuthenticationUtils $authenticationUtils): response
     {
+        // retrouver une erreur d'authentification s'il y en a une
+        $error = $authenticationUtils->getLastAuthenticationError();
+
+        if (!empty($error)) {
+            $error = 'Le nom d\'utilisateur ou le mot de passe est incorrecte';
+        }
+        
         return $this->render(
             'security/login.html.twig',
-            []
+            [
+            'error' => $error,
+            ]
         );
     }
     
+    /**
+     * @Route("/logout", name="app_logout")
+     *
+     * User logout
+     */
+    public function logout()
+    {
+    }
+
     /**
      * Registration and processing of user backup
      *

@@ -4,7 +4,7 @@ namespace App\Form;
 
 use App\Entity\Discussions;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,9 +15,10 @@ class DiscussionsType extends AbstractType
     {
         $builder
             ->add('content', TextareaType::class, [
+                'empty_data' => '',
                 'label' => 'Contenu du commentaire'
             ])
-            ->add('send', ButtonType::class, [
+            ->add('send', SubmitType::class, [
                 'label' => 'Publier'
             ])
         ;
