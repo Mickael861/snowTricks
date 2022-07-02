@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\Collection;
@@ -109,6 +110,7 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->figures = new ArrayCollection();
         $this->discussions = new ArrayCollection();
+        $this->created_at = new DateTimeImmutable();
     }
 
     public function getId(): ?int

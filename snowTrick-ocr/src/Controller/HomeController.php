@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use DateTimeImmutable;
+use App\Entity\Users;
 use App\Entity\Figures;
 use App\Entity\Discussions;
 use App\Form\DiscussionsType;
-use DateTime;
+use App\Services\ServicesDiscussions;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,29 +36,19 @@ class HomeController extends AbstractController
     /**
      * @Route("/figure/{id}/{slug}", name="app_figure")
      */
-    public function figure(Figures $figure, Request $request, ManagerRegistry $manager): Response
+    public function figure(Figures $figure, Request $request, ServicesDiscussions $servicesDiscussions): Response
     {
         $discussions = new Discussions;
         $formDiscussions = $this->createForm(DiscussionsType::class, $discussions);
 
         $formDiscussions->handleRequest($request);
 
+        /**
+         * @var Users $user
+         */
         $user = $this->getUser();
         if ($formDiscussions->isSubmitted() && $formDiscussions->isValid() && !empty($user->getId())) {
-            $dateCreate = new DateTimeImmutable();
-            $dateCreate->format('Y-m-d H:m:s');
-
-            $dateUpdate = new DateTime();
-
-            $discussions
-                ->setFigure($figure)
-                ->setUser($user)
-                ->setCreatedAt($dateCreate)
-                ->setUpdatedAt($dateUpdate);
-
-            $managerRegistry = $manager->getManager();
-            $managerRegistry->persist($discussions);
-            $managerRegistry->flush();
+            $servicesDiscussions->addDiscussions($discussions, $figure, $user);
 
             $this->addFlash('success', "Commentaire enregistré avec succés");
 

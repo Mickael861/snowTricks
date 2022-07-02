@@ -4,13 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\RegistrationType;
-use App\Services\Save\SaveUser;
-use App\Services\Mail\SendMailer;
-use App\Services\Save\SaveNewPassword;
-use App\Services\Save\SaveValidateMail;
+use App\Services\ServicesUsers;
+use App\Services\ServicesMailer;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use App\Services\Save\SaveTokenForgotPassword;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,12 +21,14 @@ class SecurityController extends AbstractController
 {
     public function __construct(
         ManagerRegistry $manager,
-        SendMailer $mailer,
-        UserPasswordHasherInterface $passwordHasher
+        ServicesMailer $ServicesMailer,
+        UserPasswordHasherInterface $passwordHasher,
+        ServicesUsers $servicesUsers
     ) {
         $this->manager = $manager;
-        $this->mailer = $mailer;
+        $this->mailer = $ServicesMailer;
         $this->passwordHasher = $passwordHasher;
+        $this->servicesUsers = $servicesUsers;
     }
 
     /**
@@ -37,8 +36,16 @@ class SecurityController extends AbstractController
      *
      * User registration
      */
-    public function registration(Request $request, SaveUser $saveUsers): Response
+    public function registration(Request $request): Response
     {
+        $user = $this->getUser();
+
+        if (!is_null($user)) {
+            $this->addFlash('errors', 'Vous êtes déjà connecté, déconnectez-vous pour pouvoir créer un compte');
+
+            return $this->redirectToRoute('app_figures');
+        }
+
         $users = new Users;
 
         $formLogin = $this->createForm(RegistrationType::class, $users);
@@ -46,7 +53,7 @@ class SecurityController extends AbstractController
         
         if ($formLogin->isSubmitted() && $formLogin->isValid()) {
             $file_path = $formLogin->get('file_path')->getData();
-            $saveUsers->save($users, $file_path);
+            $this->servicesUsers->saveNewUsers($users, $file_path);
             
             $this->addFlash('success', "Un email vous a été envoyé pour vérifier votre compte");
 
@@ -68,7 +75,7 @@ class SecurityController extends AbstractController
      *
      * @param string $token The token sent by email to the user
      */
-    public function valdationTokenMail(string $token, SaveValidateMail $validateToken): response
+    public function valdationTokenMail(string $token): response
     {
         $repository = $this->manager->getRepository(Users::class);
         $addFlash = [];
@@ -79,9 +86,8 @@ class SecurityController extends AbstractController
         ]);
 
         if (!empty($users) && !empty($users->getToken()) && !$users->isIsValidate()) {
-            $validateToken->save($users);
+            $this->servicesUsers->saveValidateUsers($users);
 
-            //TODO géré les flash success/errors et les redirects partout
             $addFlash['success'] = 'Votre compte a été accepté, vous pouvez désormais vous connecter';
             $redirect = 'app_login';
         }
@@ -99,7 +105,7 @@ class SecurityController extends AbstractController
      *
      * Send email to reset password
      */
-    public function forgotPassword(SaveTokenForgotPassword $saveToken): response
+    public function forgotPassword(): response
     {
         $request = Request::createFromGlobals();
         $user_name = trim($request->request->get('user_name'));
@@ -119,7 +125,7 @@ class SecurityController extends AbstractController
                 if (!empty($users)) {
                     $is_valide = true;
 
-                    $saveToken->save($users);
+                    $this->servicesUsers->saveTokenForgotPassword($users);
 
                     $this->addFlash('success', "Un email vous a été envoyé pour réinitialiser votre mot de passe");
 
@@ -149,7 +155,7 @@ class SecurityController extends AbstractController
      *
      * @param  string $token Token sent by email to change the password
      */
-    public function changePassword(string $token, SaveNewPassword $savePassword): response
+    public function changePassword(string $token): response
     {
         $request = Request::createFromGlobals();
         $password = trim($request->request->get('password'));
@@ -171,7 +177,7 @@ class SecurityController extends AbstractController
                     if (!empty($password)) {
                         $is_valide = true;
 
-                        $savePassword->save($users, $password);
+                        $this->servicesUsers->saveNewPassword($users, $password);
         
                         $addFlash['success'] = 'Votre mot de passe a été correctement modifié';
                     } else {
@@ -206,6 +212,13 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): response
     {
+        $user = $this->getUser();
+        if (!is_null($user)) {
+            $this->addFlash('errors', 'Vous êtes déjà connecté');
+
+            return $this->redirectToRoute('app_figures');
+        }
+
         $error = $authenticationUtils->getLastAuthenticationError();
 
         if (!empty($error)) {

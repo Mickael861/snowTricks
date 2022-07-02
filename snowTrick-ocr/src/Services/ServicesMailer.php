@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Mail;
+namespace App\Services;
 
 use Symfony\Component\Mime\Email;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +9,7 @@ use Symfony\Component\Mailer\MailerInterface;
 /**
  * Used to send emails using the mailerInterface
  */
-class SendMailer extends AbstractController
+class ServicesMailer extends AbstractController
 {
     private const EMAIL_SERVER = 'hello@example.com';
 
