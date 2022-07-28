@@ -8,6 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * Services users
+ */
 class ServicesUsers extends AbstractController
 {
     private const PROFIL_PATH_IMG = 'images\profils\\';

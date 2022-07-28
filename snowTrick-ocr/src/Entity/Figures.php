@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\FiguresRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FiguresRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=FiguresRepository::class)
@@ -59,12 +61,12 @@ class Figures
     private $updated_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure")
+     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure", cascade={"persist"})
      */
     private $figuresImages;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure")
+     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure", cascade={"persist"})
      */
     private $figuresVideos;
 
@@ -85,6 +87,10 @@ class Figures
         $this->figuresImages = new ArrayCollection();
         $this->figuresVideos = new ArrayCollection();
         $this->discussions = new ArrayCollection();
+
+        date_default_timezone_set('Europe/Paris');
+        $this->created_at = new DateTimeImmutable();
+        $this->updated_at = new DateTime();
     }
 
     public function getId(): ?int

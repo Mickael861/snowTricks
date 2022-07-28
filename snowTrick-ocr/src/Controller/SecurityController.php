@@ -36,7 +36,7 @@ class SecurityController extends AbstractController
      *
      * User registration
      */
-    public function registration(Request $request): Response
+    public function registrationAction(Request $request): Response
     {
         $user = $this->getUser();
 
@@ -75,7 +75,7 @@ class SecurityController extends AbstractController
      *
      * @param string $token The token sent by email to the user
      */
-    public function valdationTokenMail(string $token): response
+    public function valdationTokenMailAction(string $token): response
     {
         $repository = $this->manager->getRepository(Users::class);
         $addFlash = [];
@@ -105,7 +105,7 @@ class SecurityController extends AbstractController
      *
      * Send email to reset password
      */
-    public function forgotPassword(): response
+    public function forgotPasswordAction(): response
     {
         $request = Request::createFromGlobals();
         $user_name = trim($request->request->get('user_name'));
@@ -155,7 +155,7 @@ class SecurityController extends AbstractController
      *
      * @param  string $token Token sent by email to change the password
      */
-    public function changePassword(string $token): response
+    public function changePasswordAction(string $token): response
     {
         $request = Request::createFromGlobals();
         $password = trim($request->request->get('password'));
@@ -210,7 +210,7 @@ class SecurityController extends AbstractController
      *
      * User Login
      */
-    public function login(AuthenticationUtils $authenticationUtils): response
+    public function loginAction(AuthenticationUtils $authenticationUtils): response
     {
         $user = $this->getUser();
         if (!is_null($user)) {
@@ -238,7 +238,7 @@ class SecurityController extends AbstractController
      *
      * User logout
      */
-    public function logout()
+    public function logoutAction()
     {
     }
 }

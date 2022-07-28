@@ -110,6 +110,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->figures = new ArrayCollection();
         $this->discussions = new ArrayCollection();
+
+        date_default_timezone_set('Europe/Paris');
         $this->created_at = new DateTimeImmutable();
     }
 

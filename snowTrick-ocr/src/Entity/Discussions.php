@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use DateTime;
+use DateTimeImmutable;
+use Doctrine\ORM\Mapping as ORM;
 use App\Repository\DiscussionsRepository;
 use Symfony\Component\Validator\Constraints as Assert;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=DiscussionsRepository::class)
@@ -55,6 +57,13 @@ class Discussions
      * @ORM\Column(type="datetime")
      */
     private $updated_at;
+
+    public function __construct()
+    {
+        date_default_timezone_set('Europe/Paris');
+        $this->created_at = new DateTimeImmutable();
+        $this->updated_at = new DateTime();
+    }
 
     public function getId(): ?int
     {

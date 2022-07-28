@@ -22,6 +22,10 @@
     <span class="mb-5" id="tricksDown">&nbsp;</span>
     <span class="mb-5" id="tricksUp">&nbsp;</span>
 
+    {% if app.user %}
+        <a href="{{ path('app_create') }}" class="btn btn-success d-block m-auto mt-4" style="width:150px">Créer une figure</a>
+    {% endif %}
+    
     <div class="d-flex flex-wrap justify-content-evenly align-items-start mt-5 mb-5" id="figures">
         {% for figure in figures %}
             <div class="card shadow mb-5 p-2 bg-body rounded d-none figure" style="width: 20rem;">
