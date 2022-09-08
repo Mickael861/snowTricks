@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\FiguresImagesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=FiguresImagesRepository::class)
@@ -24,8 +25,29 @@ class FiguresImages
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotBlank(
+     *      message = "Une image est obligatoire"
+     * )
      */
     private $file_path;
+
+    /**
+     * file_path alias for form
+     */
+    private $file;
+
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function setFile(File $file): self
+    {
+        $this->file = $file;
+        
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -49,7 +71,7 @@ class FiguresImages
         return $this->file_path;
     }
 
-    public function setFilePath(string $file_path): self
+    public function setFilePath(String $file_path): self
     {
         $this->file_path = $file_path;
 

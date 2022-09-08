@@ -16,7 +16,8 @@ class DiscussionsType extends AbstractType
         $builder
             ->add('content', TextareaType::class, [
                 'empty_data' => '',
-                'label' => 'Contenu du commentaire'
+                'label' => 'Contenu du commentaire',
+                'required' => true
             ])
             ->add('send', SubmitType::class, [
                 'label' => 'Publier'

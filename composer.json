@@ -1,6 +1,7 @@
 {
     "require": {
         "spryker/code-sniffer": "^0.17.7",
-        "symfony/asset": "^5.4"
+        "symfony/asset": "^5.4",
+        "symfony/filesystem": "^5.4"
     }
 }

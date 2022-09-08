@@ -18,17 +18,21 @@ class RegistrationType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'E-mail'
+                'label' => 'E-mail',
+                'required' => true
             ])
             ->add('password', PasswordType::class, [
-                'label' => 'Mot de passe'
+                'label' => 'Mot de passe',
+                'required' => true
             ])
             ->add('user_name', TextType::class, [
                 'label' => 'Pseudo',
-                'empty_data' => ''
+                'empty_data' => '',
+                'required' => true
             ])
             ->add('file_path', FileType::class, [
-                'label' => 'Image du profil'
+                'label' => 'Image du profil',
+                'required' => true
             ])
             ->add('registration', SubmitType::class, [
                 'label' => 'Créer mon compte'

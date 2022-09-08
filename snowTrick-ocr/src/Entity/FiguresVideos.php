@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\FiguresVideosRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,6 +25,7 @@ class FiguresVideos
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      */
     private $site_url;
 

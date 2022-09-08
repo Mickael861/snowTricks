@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use App\Mailer\Mail;
 use App\Entity\Users;
-use DateTimeImmutable;
 use App\Form\RegistrationType;
+use App\Services\ServicesUsers;
+use App\Services\ServicesMailer;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,12 +21,14 @@ class SecurityController extends AbstractController
 {
     public function __construct(
         ManagerRegistry $manager,
+        ServicesMailer $ServicesMailer,
         UserPasswordHasherInterface $passwordHasher,
-        MailerInterface $mailer
+        ServicesUsers $servicesUsers
     ) {
         $this->manager = $manager;
+        $this->mailer = $ServicesMailer;
         $this->passwordHasher = $passwordHasher;
-        $this->mailer = $mailer;
+        $this->servicesUsers = $servicesUsers;
     }
 
     /**
@@ -35,18 +36,24 @@ class SecurityController extends AbstractController
      *
      * User registration
      */
-    public function registration(Request $request): Response
+    public function registrationAction(Request $request): Response
     {
+        if (!is_null($this->getUser())) {
+            $this->addFlash('errors', 'Vous êtes déjà connecté, déconnectez-vous pour pouvoir créer un compte');
+
+            return $this->redirectToRoute('app_figures');
+        }
+
         $users = new Users;
 
-        $this->formLogin = $this->createForm(RegistrationType::class, $users);
-        $this->formLogin->handleRequest($request);
+        $formLogin = $this->createForm(RegistrationType::class, $users);
+        $formLogin->handleRequest($request);
         
-        if ($this->formLogin->isSubmitted() && $this->formLogin->isValid()) {
-            $this->saveUsers($users);
+        if ($formLogin->isSubmitted() && $formLogin->isValid()) {
+            $file_path = $formLogin->get('file_path')->getData();
+            $this->servicesUsers->saveNewUsers($users, $file_path);
             
-            $email = $this->formLogin->get('email')->getData();
-            $this->addFlash('success', "Un email vous a été envoyé à l'adresse ($email) pour vérifier votre compte");
+            $this->addFlash('success', "Un email vous a été envoyé pour vérifier votre compte");
 
             return $this->redirectToRoute('app_figures');
         }
@@ -54,7 +61,7 @@ class SecurityController extends AbstractController
         return $this->render(
             'security/registration.html.twig',
             [
-            'formLogin' => $this->formLogin->createView(),
+            'formLogin' => $formLogin->createView(),
             ]
         );
     }
@@ -66,24 +73,18 @@ class SecurityController extends AbstractController
      *
      * @param string $token The token sent by email to the user
      */
-    public function valdationTokenMail(string $token): response
+    public function valdationTokenMailAction(string $token): response
     {
         $repository = $this->manager->getRepository(Users::class);
         $addFlash = [];
         $redirect = null;
 
-        $user = $repository->findOneBy([
+        $users = $repository->findOneBy([
             'token' => $token
         ]);
 
-        if (!empty($user) && !empty($user->getToken()) && !$user->isIsValidate()) {
-            $user
-                ->setIsValidate(true)
-                ->setToken('');
-
-            $managerRegistry = $this->manager->getManager();
-            $managerRegistry->persist($user);
-            $managerRegistry->flush();
+        if (!empty($users) && !empty($users->getToken()) && !$users->isIsValidate()) {
+            $this->servicesUsers->saveValidateUsers($users);
 
             $addFlash['success'] = 'Votre compte a été accepté, vous pouvez désormais vous connecter';
             $redirect = 'app_login';
@@ -102,7 +103,7 @@ class SecurityController extends AbstractController
      *
      * Send email to reset password
      */
-    public function forgotPassword(Request $request): response
+    public function forgotPasswordAction(): response
     {
         $request = Request::createFromGlobals();
         $user_name = trim($request->request->get('user_name'));
@@ -113,30 +114,16 @@ class SecurityController extends AbstractController
         if ($request->request->get('user_name') !== null) {
             $is_submited = true;
             if (!empty($user_name)) {
-                $users = Users::class;
-                $repository = $this->manager->getRepository($users);
+                $repository = $this->manager->getRepository(Users::class);
         
-                $user = $repository->findOneBy([
+                $users = $repository->findOneBy([
                     'user_name' => $user_name
                 ]);
 
-                if (!empty($user)) {
+                if (!empty($users)) {
                     $is_valide = true;
-                    $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
 
-                    $user->setToken($token);
-                    
-                    $managerRegistry = $this->manager->getManager();
-                    $managerRegistry->persist($user);
-                    $managerRegistry->flush();
-
-                    $from = $this->getParameter('MAILER_FROM');
-                    $to = $user->getEmail('email');
-                    $subject = 'Snowtricks modification du mot de passe';
-                    $adress_token = "http://localhost:8000/change/password/$token";
-                    $html = "<p>Veuillez cliquer sur le lien : $adress_token pour modifier votre mot de passe</p>";
-            
-                    (new Mail($this->mailer))->sendMail($from, $to, $subject, $html);
+                    $this->servicesUsers->saveTokenForgotPassword($users);
 
                     $this->addFlash('success', "Un email vous a été envoyé pour réinitialiser votre mot de passe");
 
@@ -166,7 +153,7 @@ class SecurityController extends AbstractController
      *
      * @param  string $token Token sent by email to change the password
      */
-    public function changePassword(string $token): response
+    public function changePasswordAction(string $token): response
     {
         $request = Request::createFromGlobals();
         $password = trim($request->request->get('password'));
@@ -176,30 +163,19 @@ class SecurityController extends AbstractController
         $addFlash = [];
 
         if (!empty($token)) {
-            $users = Users::class;
-            $repository = $this->manager->getRepository($users);
+            $repository = $this->manager->getRepository(Users::class);
     
-            $user = $repository->findOneBy([
+            $users = $repository->findOneBy([
                 'token' => $token
             ]);
             
-            if (!empty($user)) {
+            if (!empty($users)) {
                 if ($request->request->get('password') !== null) {
                     $is_submited = true;
                     if (!empty($password)) {
                         $is_valide = true;
-                        $hashedPassword = $this->passwordHasher->hashPassword(
-                            $user,
-                            $password
-                        );
-        
-                        $user
-                            ->setToken('')
-                            ->setPassword($hashedPassword);
-        
-                        $managerRegistry = $this->manager->getManager();
-                        $managerRegistry->persist($user);
-                        $managerRegistry->flush();
+
+                        $this->servicesUsers->saveNewPassword($users, $password);
         
                         $addFlash['success'] = 'Votre mot de passe a été correctement modifié';
                     } else {
@@ -232,9 +208,14 @@ class SecurityController extends AbstractController
      *
      * User Login
      */
-    public function login(AuthenticationUtils $authenticationUtils): response
+    public function loginAction(AuthenticationUtils $authenticationUtils): response
     {
-        // retrouver une erreur d'authentification s'il y en a une
+        if (!is_null($this->getUser())) {
+            $this->addFlash('errors', 'Vous êtes déjà connecté');
+
+            return $this->redirectToRoute('app_figures');
+        }
+
         $error = $authenticationUtils->getLastAuthenticationError();
 
         if (!empty($error)) {
@@ -254,47 +235,7 @@ class SecurityController extends AbstractController
      *
      * User logout
      */
-    public function logout()
+    public function logoutAction()
     {
-    }
-
-    /**
-     * Registration and processing of user backup
-     *
-     * @param  object $users The user who registers
-     */
-    private function saveUsers(object $users)
-    {
-        $date = new DateTimeImmutable();
-        $date->format('Y-m-d H:m:s');
-
-        $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-
-        $image = $this->formLogin->get('file_path')->getData();
-        $file = md5(uniqid()) . '.' . $image->guessExtension();
-        $image->move($this->getParameter('PROFIL_PATH_IMG'), $file);
-
-        $hashedPassword = $this->passwordHasher->hashPassword(
-            $users,
-            $this->formLogin->get('password')->getData()
-        );
-
-        $users
-            ->setToken($token)
-            ->setPassword($hashedPassword)
-            ->setFilePath($file)
-            ->setCreatedAt($date);
-
-        $managerRegistry = $this->manager->getManager();
-        $managerRegistry->persist($users);
-        $managerRegistry->flush();
-
-        $from = $this->getParameter('MAILER_FROM');
-        $to = $this->formLogin->get('email')->getData();
-        $subject = 'Snowtricks validation du compte';
-        $adress_token = "http://localhost:8000/validation/$token";
-        $html = "<p>Veuillez cliquer sur le lien : $adress_token pour valider votre compte</p>";
-
-        (new Mail($this->mailer))->sendMail($from, $to, $subject, $html);
     }
 }
