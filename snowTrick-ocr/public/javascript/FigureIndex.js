@@ -24,4 +24,15 @@ $( document ).ready(function() {
             nbrs_elts_disc = $(elts_discussions).length;
         }
     })
+
+    $('#btnViewMedia').on('click', function() {
+        var elt = $('#containerViewMedia');
+        if (elt.hasClass('d-none')) {
+            elt.removeClass('d-none');
+            elt.removeClass('d-sm-block');
+        } else {
+            elt.addClass('d-none');
+            elt.addClass('d-sm-block');
+        }
+    });
 });

@@ -7,6 +7,9 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
     'Symfony\\Component\\Asset\\' => array($vendorDir . '/symfony/asset'),
     'Spryker\\' => array($vendorDir . '/spryker/code-sniffer/Spryker'),
     'SprykerStrict\\' => array($vendorDir . '/spryker/code-sniffer/SprykerStrict'),

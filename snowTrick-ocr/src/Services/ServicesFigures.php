@@ -2,132 +2,162 @@
 
 namespace App\Services;
 
+use App\Entity\Users;
 use App\Entity\Figures;
-use App\Entity\FiguresGroups;
-use App\Entity\FiguresImages;
-use App\Entity\FiguresVideos;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 
 /**
  * Services Figures
  */
 class ServicesFigures extends AbstractController
 {
-    private $managerRegistry;
+    private const FIGURES_PATH_IMG = 'images\figures\\';
 
     public function __construct(ManagerRegistry $manager)
     {
         $this->managerRegistry = $manager->getManager();
     }
-    
+
+        
     /**
-     * add Figures
+     * save all datas of the figure
      *
      * @param  FormInterface $formFigures Form Figures
      * @param  Figures $figures Figures
      * @return void
      */
-    public function addFigures(FormInterface $formFigures, Figures $figures): void
+    public function saveAllDatasFigures(FormInterface $formFigures, Figures $figures)
     {
-        $figureName = $formFigures->get('name')->getData();
-        $figureDesc = $formFigures->get('description')->getData();
-        $figureGroup = $formFigures->get('figure_group')->getData();
-        $this->saveFigures($figures, $figureName, $figureDesc, $figureGroup);
-
-        $datasVideos = $formFigures->get('figuresVideos')->getData();
-        $this->saveFiguresVideos($figures, $datasVideos);
-
-        $datasImages = $formFigures->get('figuresImages')->getData();
-        $this->saveFiguresImages($figures, $datasImages);
-    }
-    
-    /**
-     * save figures
-     *
-     * @param  Figures $figures Figures
-     * @param  string $figureName Name of the figure
-     * @param  string $figureDesc Description of the figure
-     * @param  FiguresGroups $figureGroup Entity FiguresGroup
-     * @return void
-     */
-    private function saveFigures(
-        Figures $figures,
-        string $figureName,
-        string $figureDesc,
-        FiguresGroups $figureGroup
-    ): void {
-        $user = $this->getUser();
-
-        $slugger = new AsciiSlugger();
-        $slug = $slugger->slug($figureName);
-
-        $figures
-            ->setUser($user)
-            ->setName($figureName)
-            ->setSlug($slug)
-            ->setDescription($figureDesc)
-            ->setFigureGroup($figureGroup);
+        $this->saveFigures($formFigures, $figures);
+        $this->saveFiguresVideos($formFigures, $figures);
+        $this->saveFiguresImages($formFigures, $figures);
 
         $this->managerRegistry->persist($figures);
         $this->managerRegistry->flush();
     }
     
     /**
-     * save figures videos
+     * save Figures
      *
-     * @param  Figures $figures Entity Figures
-     * @param  ArrayCollection $datasVideos Collection of the videos
+     * @param  FormInterface $formFigures Form Figures
+     * @param  Figures $figures Figures
      * @return void
      */
-    private function saveFiguresVideos(Figures $figures, ArrayCollection $datasVideos): void
+    private function saveFigures(FormInterface $formFigures, Figures $figures): void
     {
-        $originalVideos = new ArrayCollection();
+        $user = $this->getUser();
 
+        $slugger = new AsciiSlugger();
+        $figureName = $formFigures->get('name')->getData();
+        $slug = $slugger->slug($figureName);
+
+        $figures
+            ->setUser($user)
+            ->setSlug($slug);
+    }
+    
+    /**
+     * save figures videos
+     *
+     * @param  FormInterface $formFigures Form Figures
+     * @param  Figures $figures Figures
+     * @return void
+     */
+    private function saveFiguresVideos(FormInterface $formFigures, Figures $figures): void
+    {
+        $datasVideos = $formFigures->get('figuresVideos')->getData();
         foreach ($datasVideos as $video) {
-            $originalVideos->add($video);
-        }
-
-        $figuresVideos = new FiguresVideos;
-        foreach ($originalVideos as $video) {
-            $figuresVideos
-                ->setSiteUrl($video->getSiteUrl())
-                ->setFigure($figures);
+            if (!empty($video->getSiteUrl())) {
+                $video
+                ->setFigure($figures)
+                ->setSiteUrl($video->getSiteUrl());
             
-            $this->managerRegistry->persist($video);
+                $figures->addFiguresVideo($video);
+            }
         }
-
-        $this->managerRegistry->persist($figuresVideos);
-        $this->managerRegistry->flush();
     }
     
     /**
      * save figures images
      *
-     * @param  Figures $figures Entity Figures
-     * @param  ArrayCollection $datasImages Collection of the images
+     * @param  FormInterface $formFigures Form Figures
+     * @param  Figures $figures Figures
      * @return void
      */
-    private function saveFiguresImages(Figures $figures, ArrayCollection $datasImages): void
+    private function saveFiguresImages(FormInterface $formFigures, Figures $figures)
     {
-        $originalImages = new ArrayCollection();
+        $formImages = $formFigures->get('figuresImages');
+        foreach ($formImages as $image) {
+            $figuresImages = $image->getData();
+            $file_path = $image->get('file')->getData();
+            if (!empty($file_path)) {
+                $file = md5(uniqid()) . '.' . $file_path->guessExtension();
 
-        foreach ($datasImages as $image) {
-            $originalImages->add($image);
+                $filesystem = new Filesystem();
+                $filesystem->mkdir(self::FIGURES_PATH_IMG);
+                if (!$filesystem->exists($file)) {
+                    $file_path->move(self::FIGURES_PATH_IMG, $file);
+                }
+                
+                $figuresImages
+                    ->setFigure($figures)
+                    ->setFilePath($file);
+    
+                $figures->addFiguresImage($figuresImages);
+            }
         }
+    }
+    
+    /**
+     * handle errors related to the user's session
+     *
+     * @param  Figures $figures Figures entity
+     * @param  array $errors Tableau de message d'erreur
+     * @return bool if there is a user error return true if not false
+     */
+    public function redirectErrorsUser(Figures $figures, array $errors): bool
+    {
+        $error_user = false;
+        /**
+         * @var Users $user
+         */
+        $user = $this->getUser();
+        if (is_null($user)) {
+            $this->addFlash('errors', $errors['user_empty']);
 
-        $figuresImages = new FiguresImages;
-        foreach ($originalImages as $image) {
-            $figuresImages
-                ->setfilePath($image->getFilePath())
-                ->setFigure($figures);
-            
-            $this->managerRegistry->persist($image);
+            $error_user = true;
+        } else {
+            if ($user->getId() !== $figures->getUser()->getId()) {
+                $this->addFlash('errors', $errors['errors_user_id']);
+
+                $error_user = true;
+            }
         }
-        $this->managerRegistry->persist($figuresImages);
-        $this->managerRegistry->flush();
+        
+        return $error_user;
+    }
+    
+    /**
+     * deleteImageDirectory
+     *
+     * @param  ArrayCollection $collectionImages Existing image collection before backup
+     * @param  Figures $figures
+     */
+    public function updateDeleteImageDirectory(ArrayCollection $collectionImages, Figures $figures)
+    {
+        $fileSystem = new FileSystem();
+        foreach ($collectionImages as $image) {
+            if (!$figures->getFiguresImages()->contains($image)) {
+                $file_path = $this->getParameter('images_directory') . "/" . $image->getFilePath();
+                if ($fileSystem->exists($file_path)) {
+                    $fileSystem->remove($file_path);
+                }
+            }
+        }
     }
 }

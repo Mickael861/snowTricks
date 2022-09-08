@@ -1,8 +1,8 @@
 $( document ).ready(function() {
+    const collectionHolder = $('ul.figuresVideos')[0];
+
     const addFormToCollection = (e) => {
-        const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
-    
-        const item = document.createElement('li');
+         const item = document.createElement('li');
         $(item).addClass('d-flex align-items-center')
         
         item.innerHTML = collectionHolder
@@ -21,7 +21,7 @@ $( document ).ready(function() {
     };
 
     $('.add_item_link_video').on("click", addFormToCollection);
-
+    
     const addTagFormDeleteLink = (item) => {
         const removeFormButton = document.createElement('button');
         $(removeFormButton).addClass('btn btn-danger mb-3 ms-2');
@@ -35,5 +35,9 @@ $( document ).ready(function() {
         });
     }
 
-    $('ul.figuresVideos li').on("click", addTagFormDeleteLink('ul.figuresVideos li'));
+    if ($(collectionHolder).data('index') != 0) {
+        $.each($('ul.figuresVideos li'), function( key, value ) {
+            $('#figures_save').on("click", addTagFormDeleteLink(value));
+        });
+    }
 });

@@ -14,7 +14,8 @@ class FiguresVideosType extends AbstractType
     {
         $builder
             ->add('site_url', UrlType::class, [
-                'label' => false
+                'label' => false,
+                'empty_data' => ''
             ])
         ;
     }

@@ -11,7 +11,7 @@ use Symfony\Component\Mailer\MailerInterface;
  */
 class ServicesMailer extends AbstractController
 {
-    private const EMAIL_SERVER = 'hello@example.com';
+    private const EMAIL_SERVER = 'hello@example.com'; //TODO a mettre dans le .env
 
     public function __construct(MailerInterface $mailer)
     {

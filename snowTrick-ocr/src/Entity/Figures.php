@@ -8,9 +8,13 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FiguresRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=FiguresRepository::class)
+ *
+ * @UniqueEntity("name", message = "Un nom de figure existe déjà")
  */
 class Figures
 {
@@ -32,11 +36,20 @@ class Figures
     /**
      * @ORM\ManyToOne(targetEntity=FiguresGroups::class, inversedBy="figures")
      * @ORM\JoinColumn(nullable=false)
+     *
+     * @Assert\NotNull(
+     *     message = "Un groupe est obligatoire pour cette figure"
+     * )
      */
     private $figure_group;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @Assert\NotNull(
+     *      message = "Le nom de la figure est obligatoire"
+     * )
+     *
      */
     private $name;
 
@@ -47,6 +60,10 @@ class Figures
 
     /**
      * @ORM\Column(type="text")
+     *
+     * @Assert\NotNull(
+     *      message = "La déscription est obligatoire"
+     * )
      */
     private $description;
 
@@ -61,12 +78,14 @@ class Figures
     private $updated_at;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure", cascade={"persist"}, orphanRemoval=true)
+     *
+     * @Assert\Valid
      */
     private $figuresImages;
 
     /**
-     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=FiguresVideos::class, mappedBy="figure", cascade={"persist"}, orphanRemoval=true)
      */
     private $figuresVideos;
 
@@ -279,6 +298,8 @@ class Figures
      */
     public function getPathImage(): ?string
     {
+        $figure_image = self::PATH_IMAGE . 'default-tricks.jpg';
+
         $figuresImages = $this->getFiguresImages();
         foreach ($figuresImages as $path_image) {
             $figure_image = self::PATH_IMAGE . $path_image->getFilePath();

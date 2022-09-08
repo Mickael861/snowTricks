@@ -4,8 +4,9 @@ namespace App\Services;
 
 use App\Entity\Users;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
@@ -89,10 +90,14 @@ class ServicesUsers extends AbstractController
     public function saveNewUsers(Users $users, Object $datas_file_path)
     {
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
-
         $file = md5(uniqid()) . '.' . $datas_file_path->guessExtension();
-        $datas_file_path->move(self::PROFIL_PATH_IMG, $file);
 
+        $filesystem = new Filesystem();
+        $filesystem->mkdir(self::PROFIL_PATH_IMG);
+        if (!$filesystem->exists($file)) {
+            $datas_file_path->move(self::PROFIL_PATH_IMG, $file);
+        }
+        
         $hashedPassword = $this->passwordHasher->hashPassword(
             $users,
             $users->getPassword()

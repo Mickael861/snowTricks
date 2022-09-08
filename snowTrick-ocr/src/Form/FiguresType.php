@@ -20,15 +20,18 @@ class FiguresType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Nom de la figure'
+                'label' => 'Nom de la figure',
+                'required' => true
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'Déscription'
+                'label' => 'Déscription',
+                'required' => true
             ])
             ->add('figure_group', EntityType::class, [
                 'label' => 'Catégories',
                 'class' => FiguresGroups::class,
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'required' => true
             ])
             ->add('figuresImages', CollectionType::class, [
                 'label' => false,
@@ -53,7 +56,7 @@ class FiguresType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Figures::class,
+            'data_class' => Figures::class
         ]);
     }
 }

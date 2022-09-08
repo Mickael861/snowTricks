@@ -38,9 +38,7 @@ class SecurityController extends AbstractController
      */
     public function registrationAction(Request $request): Response
     {
-        $user = $this->getUser();
-
-        if (!is_null($user)) {
+        if (!is_null($this->getUser())) {
             $this->addFlash('errors', 'Vous êtes déjà connecté, déconnectez-vous pour pouvoir créer un compte');
 
             return $this->redirectToRoute('app_figures');
@@ -212,8 +210,7 @@ class SecurityController extends AbstractController
      */
     public function loginAction(AuthenticationUtils $authenticationUtils): response
     {
-        $user = $this->getUser();
-        if (!is_null($user)) {
+        if (!is_null($this->getUser())) {
             $this->addFlash('errors', 'Vous êtes déjà connecté');
 
             return $this->redirectToRoute('app_figures');
