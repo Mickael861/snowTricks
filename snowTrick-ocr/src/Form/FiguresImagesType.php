@@ -6,6 +6,7 @@ use App\Entity\FiguresImages;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,8 +19,7 @@ class FiguresImagesType extends AbstractType
         $builder
             ->add('file', FileType::class, [
                 'label' => false,
-                'mapped' => false,
-                'required' => true
+                'mapped' => false
             ]);
     }
 

@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -57,10 +58,6 @@ class FiguresController extends AbstractController
 
         $formDiscussions->handleRequest($request);
 
-        foreach ($figure->getFiguresVideos() as $video) {
-            $video->setSiteUrl(explode('/', $video->getSiteUrl())[3]);
-        }
-
         /**
          * @var Users $user
          */
@@ -94,13 +91,19 @@ class FiguresController extends AbstractController
         
         $formFigures = $this->createForm(FiguresType::class, $figures);
         $formFigures->handleRequest($request);
-        
+
         if ($formFigures->isSubmitted() && $formFigures->isValid()) {
-            $this->serviceFigures->saveAllDatasFigures($formFigures, $figures);
+            $is_valide = $this->serviceFigures->isValideFigureImages($formFigures->get('figuresImages'));
+            
+            if ($is_valide) {
+                $this->serviceFigures->saveAllDatasFigures($formFigures, $figures);
 
-            $this->addFlash('success', "Votre Figure a été créé avec succès");
+                $this->addFlash('success', "Votre Figure a été créé avec succès");
 
-            return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
+                return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
+            } else {
+                $this->addFlash('errors', "Veuillez fournir un fichier");
+            }
         }
 
         return $this->render('figures/create.html.twig', [
@@ -135,11 +138,20 @@ class FiguresController extends AbstractController
 
         $this->serviceFigures->updateDeleteImageDirectory($collectionImages, $figures);
         if ($formFigures->isSubmitted() && $formFigures->isValid()) {
-            $this->serviceFigures->saveAllDatasFigures($formFigures, $figures);
+            $is_valide = $this->serviceFigures->isValideFigureImages(
+                $formFigures->get('figuresImages')->getData(),
+                false
+            );
+            
+            if ($is_valide) {
+                $this->serviceFigures->saveAllDatasFigures($formFigures, $figures);
 
-            $this->addFlash('success', "Votre Figure a été modifiée avec succès");
-
-            return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
+                $this->addFlash('success', "Votre Figure a été modifiée avec succès");
+    
+                return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
+            } else {
+                $this->addFlash('errors', "Veuillez fournir un fichier");
+            }
         }
 
         return $this->render('figures/create.html.twig', [

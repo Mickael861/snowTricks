@@ -79,8 +79,6 @@ class Figures
 
     /**
      * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure", cascade={"persist"}, orphanRemoval=true)
-     *
-     * @Assert\Valid
      */
     private $figuresImages;
 

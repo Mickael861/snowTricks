@@ -49,8 +49,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/a4GqP1LWoTk',
-                    'https://youtu.be/wKY0-M_gAHE'
+                    'a4GqP1LWoTk',
+                    'wKY0-M_gAHE'
                 ],
                 "figures_images" => [
                     '360.jpg'
@@ -67,8 +67,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/slnj1CDmqMQ',
-                    'https://youtu.be/OKscADDYxrg'
+                    'slnj1CDmqMQ',
+                    'OKscADDYxrg'
                 ],
                 "figures_images" => [
                     '720.jpg'
@@ -85,8 +85,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/XVPCA5yCBGw',
-                    'https://youtu.be/6S-TiJrzOmg'
+                    'XVPCA5yCBGw',
+                    '6S-TiJrzOmg'
                 ],
                 "figures_images" => [
                     '1080.jpg'
@@ -103,8 +103,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/M489XaI6CFI',
-                    'https://youtu.be/9uXw9hugmfE'
+                    'M489XaI6CFI',
+                    '9uXw9hugmfE'
                 ],
                 "figures_images" => [
                     'backflip.jpg'
@@ -121,8 +121,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/d5E92QXS9aE',
-                    'https://youtu.be/caLvgeES7Qw'
+                    'd5E92QXS9aE',
+                    'caLvgeES7Qw'
                 ],
                 "figures_images" => [
                     'frontflip.jpg'
@@ -139,8 +139,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/O1iG6-E-5rI',
-                    'https://youtu.be/zhAMvSOLXV8'
+                    'O1iG6-E-5rI',
+                    'zhAMvSOLXV8'
                 ],
                 "figures_images" => [
                     'mute.jpg'
@@ -157,8 +157,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/3RsoUTU9NMo',
-                    'https://youtu.be/9Pjr670xrzc'
+                    '3RsoUTU9NMo',
+                    '9Pjr670xrzc'
                 ],
                 "figures_images" => [
                     'noseslide.jpg'
@@ -175,8 +175,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/AwZiyg3gj4Y',
-                    'https://youtu.be/-5ZNn2Sg30I'
+                    'AwZiyg3gj4Y',
+                    '-5ZNn2Sg30I'
                 ],
                 "figures_images" => [
                     'truckDriver.jpg'
@@ -193,8 +193,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/a4GqP1LWoTk',
-                    'https://youtu.be/wKY0-M_gAHE'
+                    'a4GqP1LWoTk',
+                    'wKY0-M_gAHE'
                 ],
                 "figures_images" => [
                     'tailslide.jpg'
@@ -211,8 +211,8 @@ class AppFixtures extends Fixture
                     "Je n'arrive jamais à faire cette figure c'est trop triste, mais je continu et j'y arriverai"
                 ],
                 "figures_videos" => [
-                    'https://youtu.be/slnj1CDmqMQ',
-                    'https://youtu.be/OKscADDYxrg'
+                    'slnj1CDmqMQ',
+                    'OKscADDYxrg'
                 ],
                 "figures_images" => [
                     'hip-1.jpg',
@@ -225,17 +225,17 @@ class AppFixtures extends Fixture
             $figures = new Figures;
 
             $figures
-            ->setUser($figure['user_id'])
-            ->setFigureGroup($figure['figure_group_id'])
-            ->setName($figure['name'])
-            ->setSlug($figure['slug'])
-            ->setDescription($figure['descritpion']);
+                ->setUser($figure['user_id'])
+                ->setFigureGroup($figure['figure_group_id'])
+                ->setName($figure['name'])
+                ->setSlug($figure['slug'])
+                ->setDescription($figure['descritpion']);
 
             foreach ($figure['figures_videos'] as $video) {
                 $figuresVideos = new FiguresVideos;
                 $figuresVideos
-                ->setFigure($figures)
-                ->setSiteUrl($video);
+                    ->setFigure($figures)
+                    ->setSiteUrl($video);
     
                 $figures->addFiguresVideo($figuresVideos);
             }
