@@ -79,8 +79,6 @@ class Figures
 
     /**
      * @ORM\OneToMany(targetEntity=FiguresImages::class, mappedBy="figure", cascade={"persist"}, orphanRemoval=true)
-     *
-     * @Assert\Valid
      */
     private $figuresImages;
 
@@ -90,7 +88,7 @@ class Figures
     private $figuresVideos;
 
     /**
-     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="figure", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Discussions::class, mappedBy="figure", orphanRemoval=true, cascade={"persist"})
      */
     private $discussions;
     

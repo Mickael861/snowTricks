@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Entity\Users;
 use App\Entity\Figures;
+use App\Entity\FiguresImages;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -159,5 +160,44 @@ class ServicesFigures extends AbstractController
                 }
             }
         }
+    }
+
+    
+    /**
+     * valid the datas of form figuresImages
+     *
+     * @param  Objet $datasFigureImage datas of form figuresImages
+     * @param  bool $create mode create or update
+     * @return bool $is_valide If data figuresImages is valid true, otherwise false
+     */
+    public function isValideFigureImages(Object $datasFigureImage, $create = true)
+    {
+        $is_valide = false;
+
+        if ($create) {
+            foreach ($datasFigureImage as $figureImage) {
+                if ($figureImage->get('file')->getData() !== null) {
+                    $is_valide = true;
+                } else {
+                    $is_valide = false;
+    
+                    break;
+                }
+            }
+
+            return $is_valide;
+        }
+
+        foreach ($datasFigureImage as $figureImage) {
+            if ($figureImage->getFile() !== null) {
+                $is_valide = true;
+            } else {
+                $is_valide = false;
+
+                break;
+            }
+        }
+
+        return $is_valide;
     }
 }

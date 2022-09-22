@@ -25,10 +25,6 @@ class FiguresImages
 
     /**
      * @ORM\Column(type="string", length=255)
-     *
-     * @Assert\NotBlank(
-     *      message = "Une image est obligatoire"
-     * )
      */
     private $file_path;
 

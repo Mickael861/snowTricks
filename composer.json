@@ -2,6 +2,7 @@
     "require": {
         "spryker/code-sniffer": "^0.17.7",
         "symfony/asset": "^5.4",
-        "symfony/filesystem": "^5.4"
+        "symfony/filesystem": "^5.4",
+        "symfony/twig-pack": "^1.0"
     }
 }
