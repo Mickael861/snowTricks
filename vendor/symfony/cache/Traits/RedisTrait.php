@@ -179,7 +179,7 @@ trait RedisTrait
         }
 
         if (null === $params['class'] && \extension_loaded('redis')) {
-            $class = $params['redis_cluster'] ? \RedisCluster::class : (1 < \count($hosts) && !isset($params['redis_sentinel']) ? \RedisArray::class : \Redis::class);
+            $class = $params['redis_cluster'] ? \RedisCluster::class : (1 < \count($hosts) ? \RedisArray::class : \Redis::class);
         } else {
             $class = $params['class'] ?? \Predis\Client::class;
 
@@ -193,29 +193,21 @@ trait RedisTrait
             $redis = new $class();
 
             $initializer = static function ($redis) use ($connect, $params, $dsn, $auth, $hosts, $tls) {
-                $hostIndex = 0;
-                do {
-                    $host = $hosts[$hostIndex]['host'] ?? $hosts[$hostIndex]['path'];
-                    $port = $hosts[$hostIndex]['port'] ?? 0;
-                    $address = false;
+                $host = $hosts[0]['host'] ?? $hosts[0]['path'];
+                $port = $hosts[0]['port'] ?? 0;
 
-                    if (isset($hosts[$hostIndex]['host']) && $tls) {
-                        $host = 'tls://'.$host;
-                    }
+                if (isset($hosts[0]['host']) && $tls) {
+                    $host = 'tls://'.$host;
+                }
 
-                    if (!isset($params['redis_sentinel'])) {
-                        break;
-                    }
-
+                if (isset($params['redis_sentinel'])) {
                     $sentinel = new \RedisSentinel($host, $port, $params['timeout'], (string) $params['persistent_id'], $params['retry_interval'], $params['read_timeout']);
 
-                    if ($address = $sentinel->getMasterAddrByName($params['redis_sentinel'])) {
-                        [$host, $port] = $address;
+                    if (!$address = $sentinel->getMasterAddrByName($params['redis_sentinel'])) {
+                        throw new InvalidArgumentException(sprintf('Failed to retrieve master information from master name "%s" and address "%s:%d".', $params['redis_sentinel'], $host, $port));
                     }
-                } while (++$hostIndex < \count($hosts) && !$address);
 
-                if (isset($params['redis_sentinel']) && !$address) {
-                    throw new InvalidArgumentException(sprintf('Failed to retrieve master information from sentinel "%s" and dsn "%s".', $params['redis_sentinel'], $dsn));
+                    [$host, $port] = $address;
                 }
 
                 try {
@@ -395,7 +387,7 @@ trait RedisTrait
     {
         if ($this->redis instanceof \Predis\ClientInterface) {
             $prefix = $this->redis->getOptions()->prefix ? $this->redis->getOptions()->prefix->getPrefix() : '';
-            $prefixLen = \strlen($prefix ?? '');
+            $prefixLen = \strlen($prefix);
         }
 
         $cleared = true;

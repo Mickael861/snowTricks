@@ -63,9 +63,9 @@ class TokenIterator
 	}
 
 
-	public function isCurrentTokenType(int ...$tokenType): bool
+	public function isCurrentTokenType(int $tokenType): bool
 	{
-		return in_array($this->tokens[$this->index][Lexer::TYPE_OFFSET], $tokenType, true);
+		return $this->tokens[$this->index][Lexer::TYPE_OFFSET] === $tokenType;
 	}
 
 

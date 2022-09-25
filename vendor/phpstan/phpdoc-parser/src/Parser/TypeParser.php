@@ -282,7 +282,19 @@ class TypeParser
 	{
 		$tokens->consumeTokenType(Lexer::TOKEN_NULLABLE);
 
-		$type = $this->parseAtomic($tokens);
+		$type = new Ast\Type\IdentifierTypeNode($tokens->currentTokenValue());
+		$tokens->consumeTokenType(Lexer::TOKEN_IDENTIFIER);
+
+		if ($tokens->isCurrentTokenType(Lexer::TOKEN_OPEN_ANGLE_BRACKET)) {
+			$type = $this->parseGeneric($tokens, $type);
+
+		} elseif ($type->name === 'array' && $tokens->isCurrentTokenType(Lexer::TOKEN_OPEN_CURLY_BRACKET) && !$tokens->isPrecededByHorizontalWhitespace()) {
+			$type = $this->parseArrayShape($tokens, $type);
+		}
+
+		if ($tokens->isCurrentTokenType(Lexer::TOKEN_OPEN_SQUARE_BRACKET)) {
+			$type = $this->tryParseArrayOrOffsetAccess($tokens, $type);
+		}
 
 		return new Ast\Type\NullableTypeNode($type);
 	}

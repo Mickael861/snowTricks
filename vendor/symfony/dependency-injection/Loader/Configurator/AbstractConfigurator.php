@@ -26,7 +26,7 @@ abstract class AbstractConfigurator
     public const FACTORY = 'unknown';
 
     /**
-     * @var callable(mixed, bool)|null
+     * @var callable(mixed, bool $allowService)|null
      */
     public static $valuePreProcessor;
 
@@ -100,7 +100,7 @@ abstract class AbstractConfigurator
 
         switch (true) {
             case null === $value:
-            case \is_scalar($value):
+            case is_scalar($value):
                 return $value;
 
             case $value instanceof ArgumentInterface:

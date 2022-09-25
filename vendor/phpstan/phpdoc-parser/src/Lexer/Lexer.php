@@ -2,6 +2,9 @@
 
 namespace PHPStan\PhpDocParser\Lexer;
 
+use function array_keys;
+use function assert;
+use function count;
 use function implode;
 use function preg_match_all;
 use const PREG_SET_ORDER;
@@ -90,17 +93,28 @@ class Lexer
 	/** @var string|null */
 	private $regexp;
 
+	/** @var int[]|null */
+	private $types;
+
 	public function tokenize(string $s): array
 	{
-		if ($this->regexp === null) {
-			$this->regexp = $this->generateRegexp();
+		if ($this->regexp === null || $this->types === null) {
+			$this->initialize();
 		}
 
-		preg_match_all($this->regexp, $s, $matches, PREG_SET_ORDER);
+		assert($this->regexp !== null);
+		assert($this->types !== null);
 
-		$tokens = [];
-		foreach ($matches as $match) {
-			$tokens[] = [$match[0], (int) $match['MARK']];
+		preg_match_all($this->regexp, $s, $tokens, PREG_SET_ORDER);
+
+		$count = count($this->types);
+		foreach ($tokens as &$match) {
+			for ($i = 1; $i <= $count; $i++) {
+				if ($match[$i] !== null && $match[$i] !== '') {
+					$match = [$match[0], $this->types[$i - 1]];
+					break;
+				}
+			}
 		}
 
 		$tokens[] = ['', self::TOKEN_END];
@@ -109,15 +123,9 @@ class Lexer
 	}
 
 
-	private function generateRegexp(): string
+	private function initialize(): void
 	{
 		$patterns = [
-			self::TOKEN_HORIZONTAL_WS => '[\\x09\\x20]++',
-
-			self::TOKEN_IDENTIFIER => '(?:[\\\\]?+[a-z_\\x80-\\xFF][0-9a-z_\\x80-\\xFF-]*+)++',
-			self::TOKEN_THIS_VARIABLE => '\\$this(?![0-9a-z_\\x80-\\xFF])',
-			self::TOKEN_VARIABLE => '\\$[a-z_\\x80-\\xFF][0-9a-z_\\x80-\\xFF]*+',
-
 			// '&' followed by TOKEN_VARIADIC, TOKEN_VARIABLE, TOKEN_EQUAL, TOKEN_EQUAL or TOKEN_CLOSE_PARENTHESES
 			self::TOKEN_REFERENCE => '&(?=\\s*+(?:[.,=)]|(?:\\$(?!this(?![0-9a-z_\\x80-\\xFF])))))',
 			self::TOKEN_UNION => '\\|',
@@ -151,17 +159,20 @@ class Lexer
 			self::TOKEN_SINGLE_QUOTED_STRING => '\'(?:\\\\[^\\r\\n]|[^\'\\r\\n\\\\])*+\'',
 			self::TOKEN_DOUBLE_QUOTED_STRING => '"(?:\\\\[^\\r\\n]|[^"\\r\\n\\\\])*+"',
 
+			self::TOKEN_IDENTIFIER => '(?:[\\\\]?+[a-z_\\x80-\\xFF][0-9a-z_\\x80-\\xFF-]*+)++',
+			self::TOKEN_THIS_VARIABLE => '\\$this(?![0-9a-z_\\x80-\\xFF])',
+			self::TOKEN_VARIABLE => '\\$[a-z_\\x80-\\xFF][0-9a-z_\\x80-\\xFF]*+',
+
+			self::TOKEN_HORIZONTAL_WS => '[\\x09\\x20]++',
+
 			self::TOKEN_WILDCARD => '\\*',
 
 			// anything but TOKEN_CLOSE_PHPDOC or TOKEN_HORIZONTAL_WS or TOKEN_EOL
 			self::TOKEN_OTHER => '(?:(?!\\*/)[^\\s])++',
 		];
 
-		foreach ($patterns as $type => &$pattern) {
-			$pattern = '(?:' . $pattern . ')(*MARK:' . $type . ')';
-		}
-
-		return '~' . implode('|', $patterns) . '~Asi';
+		$this->regexp = '~(' . implode(')|(', $patterns) . ')~Asi';
+		$this->types = array_keys($patterns);
 	}
 
 }

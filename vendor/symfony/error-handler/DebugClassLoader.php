@@ -73,7 +73,6 @@ class DebugClassLoader
         'static' => 'static',
         '$this' => 'static',
         'list' => 'array',
-        'class-string' => 'string',
     ];
 
     private const BUILTIN_RETURN_TYPES = [
