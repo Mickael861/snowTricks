@@ -106,9 +106,8 @@ class SecurityController extends AbstractController
      *
      * Send email to reset password
      */
-    public function forgotPasswordAction(): response
+    public function forgotPasswordAction(Request $request): response
     {
-        $request = Request::createFromGlobals();
         $user_name = trim($request->request->get('user_name'));
         $is_valide = false;
         $is_submited = false;
@@ -218,7 +217,7 @@ class SecurityController extends AbstractController
      *
      * User logout
      */
-    public function logoutAction()
+    public function logoutAction(): void
     {
     }
 }
