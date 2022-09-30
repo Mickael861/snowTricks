@@ -40,7 +40,7 @@ class ServicesSecurity extends AbstractController
             
             if (!empty($users)) {
                 if (isset($_POST['password'])) {
-                    if ($password == null) {
+                    if ($password === null) {
                         $is_valide = false;
                         $errors = 'Le mot de passe est obligatoire';
                     } else {
