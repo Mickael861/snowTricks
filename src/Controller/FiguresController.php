@@ -148,7 +148,7 @@ class FiguresController extends AbstractController
     
                 return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
             } else {
-                $this->addFlash('errors', "Veuillez fournir un fichier");
+                $this->addFlash('errors_file', "Veuillez remplir correctement le/les champ(s) image");
             }
         }
 

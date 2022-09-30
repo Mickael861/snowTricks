@@ -116,19 +116,9 @@ class SecurityController extends AbstractController
         if ($request->request->get('user_name') !== null) {
             $is_submited = true;
             if (!empty($user_name)) {
-                $repository = $this->manager->getRepository(Users::class);
-        
-                $users = $repository->findOneBy([
-                    'user_name' => $user_name
-                ]);
+                $this->servicesUsers->managementBackupForgottenPassword($user_name, $is_valide);
 
-                if (!empty($users)) {
-                    $is_valide = true;
-
-                    $this->servicesUsers->saveTokenForgotPassword($users);
-
-                    $this->addFlash('success', "Un email vous a été envoyé pour réinitialiser votre mot de passe");
-
+                if ($is_valide) {
                     return $this->redirectToRoute('app_figures');
                 }
 
