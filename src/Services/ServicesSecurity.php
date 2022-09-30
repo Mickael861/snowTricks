@@ -30,24 +30,21 @@ class ServicesSecurity extends AbstractController
         array &$addFlash,
         bool &$is_valide,
         ?string &$errors
-    ) {
+    ): void {
         if (!empty($token)) {
             $repository = $this->manager->getRepository(Users::class);
-    
             $users = $repository->findOneBy([
                 'token' => $token
             ]);
             
             if (!empty($users)) {
-                if (isset($_POST['password'])) {
-                    if ($password === null) {
-                        $is_valide = false;
-                        $errors = 'Le mot de passe est obligatoire';
-                    } else {
-                        $this->servicesUsers->saveNewPassword($users, $password);
-        
-                        $addFlash['success'] = 'Votre mot de passe a été correctement modifié';
-                    }
+                if ($password === "") {
+                    $is_valide = false;
+                    $errors = 'Veuillez saisir le nouveau mot de passe';
+                } else {
+                    $this->servicesUsers->saveNewPassword($users, $password);
+    
+                    $addFlash['success'] = 'Votre mot de passe a été correctement modifié';
                 }
             } else {
                 $addFlash['errors'] = 'Une erreur c\'est produite, validation du compte impossible';

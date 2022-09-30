@@ -5,6 +5,15 @@
 {% block body %}
 <div class="my-5 py-2">
     <h1 class='text-center'>{{ title }}</h1>
+
+    {% for message in app.flashes('errors_file') %}
+    <div class="text-center my-5">
+        <div class="alert alert-danger d-inline">
+            {{ message }}
+        </div>
+    </div>
+    {% endfor %}
+
     <div class="d-flex flex-column justify-content-center align-items-center">
         <div>
             {{ form_start(formFigures, {'attr': {'novalidate': 'novalidate', 'style' : 'width:450px'}}) }}

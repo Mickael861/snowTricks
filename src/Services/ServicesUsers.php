@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entity\Users;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -153,5 +154,29 @@ class ServicesUsers extends AbstractController
         $html = "<p>Veuillez cliquer sur le lien : $adress_token pour modifier votre mot de passe</p>";
 
         $this->ServicesMailer->send($to, $subject, $html);
+    }
+    
+    /**
+     * management backup forgotten password
+     *
+     * @param  String $user_name Le nom d'utilisateur
+     * @param  String $is_valide true if form is valide, false otherwise
+     * 
+     */
+    public function managementBackupForgottenPassword(String $user_name, bool &$is_valide): void
+    {
+        $repository = $this->manager->getRepository(Users::class);
+        
+        $users = $repository->findOneBy([
+            'user_name' => $user_name
+        ]);
+
+        if (!empty($users)) {
+            $is_valide = true;
+
+            $this->saveTokenForgotPassword($users);
+
+            $this->addFlash('success', "Un email vous a été envoyé pour réinitialiser votre mot de passe");
+        }
     }
 }
