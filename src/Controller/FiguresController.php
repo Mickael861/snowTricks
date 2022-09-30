@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FiguresController extends AbstractController
@@ -77,7 +78,7 @@ class FiguresController extends AbstractController
     /**
      * @Route("/create/figure", name="app_create")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request): Response
     {
         if (is_null($this->getUser())) {
             $this->addFlash('errors', 'Vous n\'avez pas accés à cette partie du site');
@@ -114,7 +115,7 @@ class FiguresController extends AbstractController
     /**
      * @Route("/update/figure/{id}", name="app_update")
      */
-    public function updateAction(Request $request, Figures $figures)
+    public function updateAction(Request $request, Figures $figures): Response
     {
         $errors = [
             "user_empty" => "Vous n\'avez pas accés à cette partie du site",
@@ -161,7 +162,7 @@ class FiguresController extends AbstractController
     /**
      * @Route("/delete/figure/{id}", name="app_delete")
      */
-    public function delete(Figures $figures)
+    public function delete(Figures $figures): RedirectResponse 
     {
         $errors = [
             "user_empty" => "Vous n\'avez pas accés à cette partie du site",

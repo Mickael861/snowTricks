@@ -32,7 +32,7 @@ class ServicesUsers extends AbstractController
      *
      * @param Users $users Vérification
      */
-    public function saveValidateUsers(Users $users)
+    public function saveValidateUsers(Users $users): void
     {
         $users
             ->setIsValidate(true)
@@ -49,7 +49,7 @@ class ServicesUsers extends AbstractController
      * @param  Users $users Entity Users
      * @param  string $password New password
      */
-    public function saveNewPassword(Users $users, string $password)
+    public function saveNewPassword(Users $users, string $password): void
     {
         $hashedPassword = $this->passwordHasher->hashPassword(
             $users,
@@ -70,7 +70,7 @@ class ServicesUsers extends AbstractController
      *
      * @param  Users $users Entity Users
      */
-    public function saveTokenForgotPassword(Users $users)
+    public function saveTokenForgotPassword(Users $users): void
     {
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
 
@@ -88,7 +88,7 @@ class ServicesUsers extends AbstractController
      *
      * @param Object $datas_file_path Profile picture data
      */
-    public function saveNewUsers(Users $users, Object $datas_file_path)
+    public function saveNewUsers(Users $users, Object $datas_file_path): void
     {
         $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
         $file = md5(uniqid()) . '.' . $datas_file_path->guessExtension();
@@ -122,7 +122,7 @@ class ServicesUsers extends AbstractController
      * @param  Users $users Entity Users
      * @param  string $token unique token to verify email address
      */
-    private function sendMailRegistration(Users $users, string $token)
+    private function sendMailRegistration(Users $users, string $token): void
     {
         $to = $users->getEmail();
         $subject = 'Snowtricks validation du compte';
@@ -142,7 +142,7 @@ class ServicesUsers extends AbstractController
      * @param  Users $users Entity users
      * @param  string $token unique token to verify email address
      */
-    private function sendMailForgotPassword(Users $users, string $token)
+    private function sendMailForgotPassword(Users $users, string $token): void
     {
         $to = $users->getEmail('email');
         $subject = 'Snowtricks modification du mot de passe';
