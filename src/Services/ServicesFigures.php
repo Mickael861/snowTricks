@@ -148,7 +148,7 @@ class ServicesFigures extends AbstractController
      * @param  ArrayCollection $collectionImages Existing image collection before backup
      * @param  Figures $figures
      */
-    public function updateDeleteImageDirectory(ArrayCollection $collectionImages, Figures $figures)
+    public function updateDeleteImageDirectory(ArrayCollection $collectionImages, Figures $figures): void
     {
         $fileSystem = new FileSystem();
         foreach ($collectionImages as $image) {

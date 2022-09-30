@@ -27,12 +27,12 @@ class AppFixtures extends Fixture
     {
         $users = $this->saveUser($manager);
 
-        $this->saveFigureGroup($users, $manager);
+        $this->saveFigureGroup($manager);
 
         $this->saveFigures($users, $manager);
     }
 
-    private function saveFigures(Users $users, ObjectManager $manager)
+    private function saveFigures(Users $users, ObjectManager $manager): void
     {
         $repository = $manager->getRepository(FiguresGroups::class);
 
@@ -275,7 +275,7 @@ class AppFixtures extends Fixture
     /**
      * save of different groups
      */
-    private function saveFigureGroup(Users $users, ObjectManager $manager)
+    private function saveFigureGroup(ObjectManager $manager): void
     {
         $groups = [
             'Grabs',
