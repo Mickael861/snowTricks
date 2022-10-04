@@ -15,8 +15,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  */
 class ServicesUsers extends AbstractController
 {
-    private const PROFIL_PATH_IMG = 'images\profils\\';
-
     public function __construct(
         ManagerRegistry $manager,
         ServicesMailer $ServicesMailer,
@@ -94,9 +92,9 @@ class ServicesUsers extends AbstractController
         $file = md5(uniqid()) . '.' . $datas_file_path->guessExtension();
 
         $filesystem = new Filesystem();
-        $filesystem->mkdir(self::PROFIL_PATH_IMG);
+        $filesystem->mkdir($this->getParameter('images_users'));
         if (!$filesystem->exists($file)) {
-            $datas_file_path->move(self::PROFIL_PATH_IMG, $file);
+            $datas_file_path->move($this->getParameter('images_users'), $file);
         }
         
         $hashedPassword = $this->passwordHasher->hashPassword(
