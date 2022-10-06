@@ -81,7 +81,7 @@ class FiguresController extends AbstractController
     public function createAction(Request $request): Response
     {
         if (is_null($this->getUser())) {
-            $this->addFlash('errors', 'Vous n\'avez pas accés à cette partie du site');
+            $this->addFlash('errors', "Vous n'avez pas accés à cette partie du site");
 
             return $this->redirectToRoute('app_figures');
         }
@@ -101,7 +101,7 @@ class FiguresController extends AbstractController
 
                 return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
             } else {
-                $this->addFlash('errors', "Veuillez fournir un fichier");
+                $this->addFlash('errors_file', "Veuillez remplir correctement le/les champ(s) image");
             }
         }
 
@@ -118,7 +118,7 @@ class FiguresController extends AbstractController
     public function updateAction(Request $request, Figures $figures): Response
     {
         $errors = [
-            "user_empty" => "Vous n\'avez pas accés à cette partie du site",
+            "user_empty" => "Vous n'avez pas accés à cette partie du site",
             "errors_user_id" => "Vous ne pouvez pas modifier cette figure"
         ];
         $error_user = $this->serviceFigures->redirectErrorsUser($figures, $errors);
@@ -137,16 +137,11 @@ class FiguresController extends AbstractController
 
         $this->serviceFigures->updateDeleteImageDirectory($collectionImages, $figures);
         if ($formFigures->isSubmitted() && $formFigures->isValid()) {
-            $is_valide = $this->serviceFigures->isValideFigureImages(
-                $formFigures->get('figuresImages')->getData(),
-                false
-            );
-            
-            if ($is_valide) {
-                $this->serviceFigures->saveAllDatasFigures($formFigures, $figures);
+            $is_valide = $this->serviceFigures->saveAllDatasFigures($formFigures, $figures, true);
 
+            if ($is_valide) {
                 $this->addFlash('success', "Votre Figure a été modifiée avec succès");
-    
+
                 return $this->redirectToRoute('app_figure', ['id' => $figures->getId(), 'slug' => $figures->getSlug()]);
             } else {
                 $this->addFlash('errors_file', "Veuillez remplir correctement le/les champ(s) image");
@@ -165,7 +160,7 @@ class FiguresController extends AbstractController
     public function delete(Figures $figures): RedirectResponse 
     {
         $errors = [
-            "user_empty" => "Vous n\'avez pas accés à cette partie du site",
+            "user_empty" => "Vous n'avez pas accés à cette partie du site",
             "errors_user_id" => "Vous ne pouvez pas supprimer cette figure"
         ];
         $error_user = $this->serviceFigures->redirectErrorsUser($figures, $errors);

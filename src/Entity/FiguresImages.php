@@ -32,7 +32,7 @@ class FiguresImages
      */
     private $file;
 
-    public function getFile(): String
+    public function getFile(): ?string
     {
         return $this->file;
     }
