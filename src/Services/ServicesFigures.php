@@ -16,8 +16,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class ServicesFigures extends AbstractController
 {
-    private const FIGURES_PATH_IMG = 'images\figures\\';
-
     public function __construct(ManagerRegistry $manager)
     {
         $this->managerRegistry = $manager->getManager();
@@ -31,14 +29,22 @@ class ServicesFigures extends AbstractController
      * @param  Figures $figures Figures
      * @return void
      */
-    public function saveAllDatasFigures(FormInterface $formFigures, Figures $figures)
+    public function saveAllDatasFigures(FormInterface $formFigures, Figures $figures, $update = false)
     {
         $this->saveFigures($formFigures, $figures);
         $this->saveFiguresVideos($formFigures, $figures);
         $this->saveFiguresImages($formFigures, $figures);
 
+        foreach ($figures->getFiguresImages() as $image) {
+            if ($image->getFilePath() === null) {
+                return false;
+            }
+        }
+
         $this->managerRegistry->persist($figures);
         $this->managerRegistry->flush();
+
+        return true;
     }
     
     /**
@@ -99,9 +105,9 @@ class ServicesFigures extends AbstractController
                 $file = md5(uniqid()) . '.' . $file_path->guessExtension();
 
                 $filesystem = new Filesystem();
-                $filesystem->mkdir(self::FIGURES_PATH_IMG);
+                $filesystem->mkdir($this->getParameter('images_directory'));
                 if (!$filesystem->exists($file)) {
-                    $file_path->move(self::FIGURES_PATH_IMG, $file);
+                    $file_path->move($this->getParameter('images_directory'), $file);
                 }
                 
                 $figuresImages
@@ -166,29 +172,14 @@ class ServicesFigures extends AbstractController
      * valid the datas of form figuresImages
      *
      * @param  Objet $datasFigureImage datas of form figuresImages
-     * @param  bool $create mode create or update
      * @return bool $is_valide If data figuresImages is valid true, otherwise false
      */
-    public function isValideFigureImages(Object $datasFigureImage, $create = true)
+    public function isValideFigureImages(Object $datasFigureImage)
     {
         $is_valide = false;
 
-        if ($create) {
-            foreach ($datasFigureImage as $figureImage) {
-                if ($figureImage->get('file')->getData() !== null) {
-                    $is_valide = true;
-                } else {
-                    $is_valide = false;
-    
-                    break;
-                }
-            }
-
-            return $is_valide;
-        }
-
         foreach ($datasFigureImage as $figureImage) {
-            if ($figureImage->getFile() !== null) {
+            if ($figureImage->get('file')->getData() !== null) {
                 $is_valide = true;
             } else {
                 $is_valide = false;
