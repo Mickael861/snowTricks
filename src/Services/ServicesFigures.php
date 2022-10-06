@@ -27,9 +27,9 @@ class ServicesFigures extends AbstractController
      *
      * @param  FormInterface $formFigures Form Figures
      * @param  Figures $figures Figures
-     * @return void
+     * @return bool
      */
-    public function saveAllDatasFigures(FormInterface $formFigures, Figures $figures, $update = false)
+    public function saveAllDatasFigures(FormInterface $formFigures, Figures $figures): bool
     {
         $this->saveFigures($formFigures, $figures);
         $this->saveFiguresVideos($formFigures, $figures);
